@@ -11,7 +11,7 @@ labels:
   'test':
     include:
       - '\btest\b'
-  'feature':
+  '✨feature':
     include:
       - '\bfeat\b'
   'documentation':
