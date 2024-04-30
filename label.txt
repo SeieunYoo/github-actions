@@ -1,2 +1,2 @@
 label test
-label test2
+label test
