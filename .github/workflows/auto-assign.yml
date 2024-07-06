@@ -19,6 +19,16 @@ jobs:
     runs-on: ubuntu-latest
     if: github.event_name == 'issues'
     steps:
-      - uses: hkusu/review-assign-action@v1
+      - name: Assign issue author
+        uses: actions/github-script@v6
         with:
-          assignees: ${{ github.actor }} # assign issue author
+          github-token: ${{ secrets.MY_SECRET_TOKEN }}
+          script: |
+            const issue_number = context.payload.issue.number;
+            const assignee = context.payload.issue.user.login;
+            await github.issues.addAssignees({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issue_number,
+              assignees: [assignee]
+            });
