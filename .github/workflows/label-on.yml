@@ -1,0 +1,68 @@
+name: Review Assign
+
+on:
+  pull_request:
+    types: [opened, ready_for_review]
+  issues:
+    types: [opened]
+
+jobs:
+  check_label_and_act:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check for specific label on PR
+        id: check_label
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.MY_SECRET_TOKEN }}
+          script: |
+            const labelToCheck = 'your-label-name'; // 확인할 라벨 이름
+            const labels = context.payload.pull_request ? context.payload.pull_request.labels : context.payload.issue.labels;
+            const hasLabel = labels.some(label => label.name === labelToCheck);
+
+            return { hasLabel: hasLabel };
+
+      - name: Comment if label is missing
+        if: steps.check_label.outputs.hasLabel == 'false'
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.MY_SECRET_TOKEN }}
+          script: |
+            const issueOrPr = context.payload.pull_request ? 'pull request' : 'issue';
+            github.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: `This ${issueOrPr} does not have the required label. Please add the label '${labelToCheck}' to proceed.`
+            });
+
+  check_issue_label_and_act:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check for specific label on Issue
+        id: check_label
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const labelToCheck = 'your-label-name'; // 확인할 라벨 이름
+            const labels = context.payload.issue.labels;
+            const hasLabel = labels.some(label => label.name === labelToCheck);
+
+            return { hasLabel: hasLabel };
+
+      - name: Comment if label is missing
+        if: steps.check_label.outputs.hasLabel == 'false'
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const issueOrPr = context.payload.pull_request ? 'pull request' : 'issue';
+            github.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: `This ${issueOrPr} does not have the required label. Please add the label '${labelToCheck}' to proceed.`
+            });
