@@ -25,7 +25,7 @@ jobs:
             return { hasLabel: hasLabel };
 
       - name: Comment if label is missing
-        if: steps.check_label.outputs.hasLabel == 'false'
+        if: steps.check_label.outputs.hasLabel == false
         uses: actions/github-script@v6
         with:
           github-token: ${{ secrets.MY_SECRET_TOKEN }}
