@@ -21,7 +21,7 @@ jobs:
             const labelToCheck = 'your-label-name'; // 확인할 라벨 이름
             const labels = context.payload.pull_request.labels;
             const hasLabel = labels.some(label => label.name === labelToCheck);
-            return { hasLabel: hasLabel.toString() }; // 문자열로 반환
+            core.setOutput('hasLabel', hasLabel.toString());
 
       - name: Comment if label is missing
         if: steps.check_label.outputs.hasLabel == 'false'
