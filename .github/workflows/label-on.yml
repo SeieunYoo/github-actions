@@ -25,15 +25,8 @@ jobs:
 
       - name: Comment if label is missing
         if: steps.check_label.outputs.hasLabel == 'false'
-        uses: actions/github-script@v6
+        uses: thollander/actions-comment-pull-request@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.MY_SECRET_TOKEN }}
         with:
-          github-token: ${{ secrets.MY_SECRET_TOKEN }}
-          script: |
-            const labelToCheck = 'your-label-name';
-            const issueOrPr = 'pull request';
-            await github.issues.createComment({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: context.payload.pull_request.number,
-              body: `This ${issueOrPr} does not have the required label. Please add the label '${labelToCheck}' to proceed.`
-            });
+          message: "Label 을 붙여주세요"
