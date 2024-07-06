@@ -1,0 +1,32 @@
+name: Review Assign
+
+on:
+  pull_request:
+    types: [opened, ready_for_review]
+  issues:
+    types: [opened]
+
+jobs:
+  check_label_and_act:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check for specific label on PR
+        if: github.event_name == 'pull_request'
+        id: check_label
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.MY_SECRET_TOKEN }}
+          script: |
+            const labelToCheck = 'your-label-name'; // 확인할 라벨 이름
+            const labels = context.payload.pull_request.labels;
+            const hasLabel = labels.some(label => label.name === labelToCheck);
+            core.setOutput('hasLabel', hasLabel.toString());
+
+      - name: Comment if label is missing
+        if: steps.check_label.outputs.hasLabel == 'false'
+        uses: thollander/actions-comment-pull-request@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.MY_SECRET_TOKEN }}
+        with:
+          message: "Label 을 붙여주세요"
