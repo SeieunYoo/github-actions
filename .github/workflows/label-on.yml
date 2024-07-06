@@ -12,6 +12,7 @@ jobs:
 
     steps:
       - name: Check for specific label on PR
+        if: github.event_name == 'pull_request'
         id: check_label
         uses: actions/github-script@v6
         with:
@@ -42,6 +43,7 @@ jobs:
 
     steps:
       - name: Check for specific label on Issue
+        if: github.event_name == 'issue'
         id: check_label
         uses: actions/github-script@v6
         with:
