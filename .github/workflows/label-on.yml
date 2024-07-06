@@ -45,7 +45,7 @@ jobs:
         id: check_label
         uses: actions/github-script@v6
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{ secrets.MY_SECRET_TOKEN }}
           script: |
             const labelToCheck = 'your-label-name'; // 확인할 라벨 이름
             const labels = context.payload.issue.labels;
@@ -57,7 +57,7 @@ jobs:
         if: steps.check_label.outputs.hasLabel == 'false'
         uses: actions/github-script@v6
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{ secrets.MY_SECRET_TOKEN }}
           script: |
             const issueOrPr = context.payload.pull_request ? 'pull request' : 'issue';
             github.issues.createComment({
