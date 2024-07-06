@@ -3,26 +3,11 @@ name: Review Assign
 on:
   pull_request:
     types: [opened, ready_for_review, reopened]
-  issues:
-    types: [opened, reopened]
 
 jobs:
-  assign_pull_request:
+  assign:
     runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request'
     steps:
       - uses: hkusu/review-assign-action@v1
         with:
-          assignees: ${{ github.actor }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.MY_SECRET_TOKEN }}
-
-  assign_issue:
-    runs-on: ubuntu-latest
-    if: github.event_name == 'issues'
-    steps:
-      - uses: hkusu/review-assign-action@v1
-        with:
-          assignees: ${{ github.actor }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.MY_SECRET_TOKEN }}
+          assignees: ${{ github.actor }} # assign pull request author
