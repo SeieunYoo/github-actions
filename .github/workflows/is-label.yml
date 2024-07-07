@@ -23,7 +23,7 @@ jobs:
             core.setOutput('hasLabel', hasLabel.toString());
 
       - name: Comment if no labels are present
-        if: steps.check_label.outputs.hasAnyLabel == 'false'
+        if: steps.check_label.outputs.hasLabel == 'false'
         uses: thollander/actions-comment-pull-request@v1
         env:
           GITHUB_TOKEN: ${{ secrets.MY_SECRET_TOKEN }}
@@ -46,7 +46,7 @@ jobs:
             core.setOutput('hasLabel', hasLabel.toString());
 
       - name: Comment if no labels are present
-        if: steps.check_label.outputs.hasAnyLabel == 'false'
+        if: steps.check_label.outputs.hasLabel == 'false'
         uses: thollander/actions-comment-pull-request@v1
         env:
           GITHUB_TOKEN: ${{ secrets.MY_SECRET_TOKEN }}
