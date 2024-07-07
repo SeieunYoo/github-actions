@@ -1,0 +1,34 @@
+name: Prevent Merge on Specific Label
+
+on:
+  pull_request:
+    types: [opened, labeled, unlabeled, synchronize]
+
+jobs:
+  prevent-merge:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+
+      - name: Check for specific label
+        id: check_label
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const labelToCheck = 'do-not-merge';  // 확인할 라벨 이름
+            const labels = context.payload.pull_request.labels;
+            const hasLabel = labels.some(label => label.name === labelToCheck);
+            core.setOutput('hasLabel', hasLabel.toString());
+
+
+      - name: Fail if label is present
+        if: steps.check_label.outputs.hasLabel == 'true'
+        run: |
+          echo "This pull request has the 'do-not-merge' label and cannot be merged."
+          exit 1
+
+      - name: Success if label is not present
+        if: steps.check_label.outputs.hasLabel == 'false'
+        run: echo "This pull request does not have the 'do-not-merge' label and can proceed."
