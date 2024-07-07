@@ -15,20 +15,12 @@ jobs:
         with:
           assignees: ${{ github.actor }} # assign pull request author
 
-  assign_issue:
+  auto-assign:
     runs-on: ubuntu-latest
-    if: github.event_name == 'issues'
+    permissions: 
+        issues: write
     steps:
-      - name: Assign issue author
-        uses: actions/github-script@v6
-        with:
-          github-token: ${{ secrets.MY_SECRET_TOKEN }}
-          script: |
-            const issue_number = context.payload.issue.number;
-            const assignee = context.payload.issue.user.login;
-            await github.issues.addAssignees({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: issue_number,
-              assignees: [assignee]
-            });
+        - name: 'Auto-assign issue'
+          uses: pozil/auto-assign-issue@v2
+          with:
+            assignees:  ${{ github.actor }} # assign pull request author
