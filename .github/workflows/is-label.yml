@@ -1,0 +1,54 @@
+name: Any Label in PR or Issue
+
+on:
+  pull_request:
+    types: [opened, ready_for_review]
+  issues:
+    types: [opened]
+
+jobs:
+  pr_check_label_and_act:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check if any label is on PR
+        if: github.event_name == 'pull_request'
+        id: check_label
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.MY_SECRET_TOKEN }}
+          script: |
+            const labels = context.payload.pull_request.labels;
+            const hasLabel = labels.length > 0;
+            core.setOutput('hasLabel', hasLabel.toString());
+
+      - name: Comment if no labels are present
+        if: steps.check_label.outputs.hasLabel == 'false'
+        uses: thollander/actions-comment-pull-request@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.MY_SECRET_TOKEN }}
+        with:
+          message: "PR에 Label 을 붙여주세요"
+
+  issue_check_issue_label_and_act:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check if any label is on Issue
+        if: github.event_name == 'issues'
+        id: check_label
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.MY_SECRET_TOKEN }}
+          script: |
+            const labels = context.payload.issue.labels;
+            const hasLabel = labels.length > 0;
+            core.setOutput('hasLabel', hasLabel.toString());
+
+      - name: Comment if no labels are present
+        if: steps.check_label.outputs.hasLabel == 'false'
+        uses: thollander/actions-comment-pull-request@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.MY_SECRET_TOKEN }}
+        with:
+          message: "Issue 에 Label 을 붙여주세요"
