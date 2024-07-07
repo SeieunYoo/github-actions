@@ -20,8 +20,8 @@ jobs:
             const labelToCheck = 'do-not-merge';  // 확인할 라벨 이름
             const labels = context.payload.pull_request.labels;
             const hasLabel = labels.some(label => label.name === labelToCheck);
+            core.setOutput('hasLabel', hasLabel.toString());
 
-            return { hasLabel };
 
       - name: Fail if label is present
         if: steps.check_label.outputs.hasLabel == 'true'
