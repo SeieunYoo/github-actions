@@ -1,4 +1,4 @@
-name: Review Assign
+name: Specified Label in PR
 
 on:
   pull_request:
