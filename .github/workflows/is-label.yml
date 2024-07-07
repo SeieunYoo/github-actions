@@ -19,7 +19,7 @@ jobs:
           github-token: ${{ secrets.MY_SECRET_TOKEN }}
           script: |
             const labels = context.payload.pull_request.labels;
-            const hasAnyLabel = labels.length > 0;
+            const hasLabel = labels.length > 0;
             core.setOutput('hasLabel', hasLabel.toString());
 
       - name: Comment if no labels are present
@@ -42,7 +42,7 @@ jobs:
           github-token: ${{ secrets.MY_SECRET_TOKEN }}
           script: |
             const labels = context.payload.issue.labels;
-            const hasAnyLabel = labels.length > 0;
+            const hasLabel = labels.length > 0;
             core.setOutput('hasLabel', hasLabel.toString());
 
       - name: Comment if no labels are present
