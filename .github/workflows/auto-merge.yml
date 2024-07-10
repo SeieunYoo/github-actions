@@ -8,8 +8,7 @@ jobs:
   auto-merge:
     runs-on: ubuntu-latest
 
-    if: github.event.pull_request.base.ref == 'main' && github.event.pull_request.head.ref == 'changeset-release/example' && github.event.review.state == 'approved'
-
+    if: github.event.pull_request.base.ref == 'main' && github.event.pull_request.head.ref == 'changeset-release/example'
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
