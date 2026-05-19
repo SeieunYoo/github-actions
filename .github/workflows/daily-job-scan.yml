@@ -1,0 +1,43 @@
+name: Daily Job Scan
+
+on:
+  schedule:
+    # 매일 한국시간 오전 9시 (UTC 00:00)
+    - cron: "0 0 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  issues: write
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: scripts/requirements.txt
+
+      - name: Install deps
+        run: pip install -r scripts/requirements.txt
+
+      - name: Run scan
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: python scripts/scan.py
+
+      - name: Commit updated state
+        run: |
+          if [[ -n "$(git status --porcelain state/seen.json)" ]]; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add state/seen.json
+            git commit -m "chore(job-scan): update seen state"
+            git push
+          else
+            echo "no state changes"
+          fi
