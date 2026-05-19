@@ -5,6 +5,13 @@ on:
     # 매일 한국시간 오전 9시 (UTC 00:00)
     - cron: "0 0 * * *"
   workflow_dispatch:
+  push:
+    branches:
+      - claude/auto-job-application-rUUD8
+    paths:
+      - "scripts/**"
+      - "config/**"
+      - ".github/workflows/daily-job-scan.yml"
 
 permissions:
   contents: write
