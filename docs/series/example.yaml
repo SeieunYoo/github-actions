@@ -1,0 +1,33 @@
+# Sample series config for the prompt builder.
+# Copy this to docs/series/<your-series>.yaml and edit.
+
+series_name: "cafe-diary"
+description: "20대 직장인의 카페 일상 브이로그 풍 숏츠"
+
+characters:
+  main:
+    name: "지유"
+    description_block: |
+      A 25-year-old Korean woman with shoulder-length wavy black hair,
+      round face, large dark brown eyes, wearing a cream-colored
+      oversized knit sweater and round silver-framed glasses.
+      Calm expression, soft natural makeup.
+
+world:
+  description_block: |
+    A cozy small Korean-style cafe interior, warm tungsten lighting,
+    wooden tables, hanging plants near the window, soft afternoon
+    sunlight streaming in from the left.
+
+style:
+  description_block: |
+    Soft cinematic look, slightly desaturated color palette,
+    subtle 35mm film grain, shallow depth of field.
+  default_camera: "static medium shot, eye level"
+
+negative:
+  - "low quality"
+  - "distorted face"
+  - "inconsistent character"
+  - "wrong aspect ratio"
+  - "extra fingers"
