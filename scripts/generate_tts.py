@@ -1,76 +1,54 @@
 #!/usr/bin/env python3
 """
-Generate per-scene narration audio with ElevenLabs TTS.
+Generate per-scene narration audio with Microsoft Edge TTS (free, no API key).
 
 Reads:  <ep_dir>/02_script.json
 Writes: <ep_dir>/05_audio/scene_NN.mp3  (one per scene with non-empty narration)
 
-Auth:
-    export ELEVENLABS_API_KEY=...
-    export ELEVENLABS_VOICE_ID=...   (or pass --voice)
+Install:
+    pip install edge-tts
 
 Usage:
-    python scripts/generate_tts.py output/cafe-diary/01 \\
-        --voice 21m00Tcm4TlvDq8ikWAM
+    python scripts/generate_tts.py output/cafe-diary/01 --voice ko-KR-SunHiNeural
+
+List Korean voices:
+    edge-tts --list-voices | grep ko-KR
+    # e.g. ko-KR-SunHiNeural (female), ko-KR-InJoonNeural (male), ko-KR-HyunsuNeural
 """
 from __future__ import annotations
 
 import argparse
+import asyncio
 import json
 import os
 import sys
 from pathlib import Path
 
 try:
-    import requests
+    import edge_tts
 except ImportError:
-    sys.exit("requests not installed. Run: pip install requests")
+    sys.exit("edge-tts not installed. Run: pip install edge-tts")
 
 
-API_URL = "https://api.elevenlabs.io/v1/text-to-speech/{voice}"
-
-
-def synthesize(text: str, voice_id: str, api_key: str, model: str,
-               stability: float, similarity_boost: float) -> bytes:
-    r = requests.post(
-        API_URL.format(voice=voice_id),
-        headers={
-            "xi-api-key": api_key,
-            "accept": "audio/mpeg",
-            "content-type": "application/json",
-        },
-        json={
-            "text": text,
-            "model_id": model,
-            "voice_settings": {
-                "stability": stability,
-                "similarity_boost": similarity_boost,
-            },
-        },
-        timeout=120,
-    )
-    if not r.ok:
-        raise RuntimeError(f"ElevenLabs {r.status_code}: {r.text[:300]}")
-    return r.content
+async def synthesize(text: str, voice: str, rate: str, out: Path) -> None:
+    # Write to a temp file first so a failed/partial run never leaves an
+    # empty mp3 that the skip-if-exists check would mistake for success.
+    tmp = out.with_suffix(".mp3.part")
+    try:
+        await edge_tts.Communicate(text, voice, rate=rate).save(str(tmp))
+        os.replace(tmp, out)
+    except BaseException:
+        tmp.unlink(missing_ok=True)
+        raise
 
 
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("ep_dir", help="episode directory (must contain 02_script.json)")
-    ap.add_argument("--voice", default=os.environ.get("ELEVENLABS_VOICE_ID"),
-                    help="ElevenLabs voice ID (or set ELEVENLABS_VOICE_ID)")
-    ap.add_argument("--model", default="eleven_multilingual_v2",
-                    help="TTS model (default eleven_multilingual_v2 — supports Korean)")
-    ap.add_argument("--stability", type=float, default=0.5)
-    ap.add_argument("--similarity-boost", type=float, default=0.75)
+    ap.add_argument("--voice", default="ko-KR-SunHiNeural", help="Edge TTS voice name")
+    ap.add_argument("--rate", default="+0%", help="speech rate, e.g. +10%% or -5%%")
     ap.add_argument("--overwrite", action="store_true")
     args = ap.parse_args()
-
-    api_key = os.environ.get("ELEVENLABS_API_KEY")
-    if not api_key:
-        sys.exit("ELEVENLABS_API_KEY env var required")
-    if not args.voice:
-        sys.exit("voice id required (--voice or ELEVENLABS_VOICE_ID)")
 
     ep = Path(args.ep_dir)
     script_path = ep / "02_script.json"
@@ -92,10 +70,8 @@ def main() -> None:
             continue
         preview = text[:40].replace("\n", " ")
         print(f"[scene {sid:02d}] {preview}...")
-        audio = synthesize(text, args.voice, api_key, args.model,
-                           args.stability, args.similarity_boost)
-        out.write_bytes(audio)
-        print(f"  -> {out} ({len(audio)} bytes)")
+        asyncio.run(synthesize(text, args.voice, args.rate, out))
+        print(f"  -> {out}")
 
 
 if __name__ == "__main__":

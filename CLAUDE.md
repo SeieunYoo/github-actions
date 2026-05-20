@@ -44,15 +44,28 @@ Claude Code가 이 문서를 먼저 읽고 작업 컨텍스트를 잡습니다.
 
 ## 5. 외부 도구 / API
 
-| 용도 | 도구 | 비고 |
-|---|---|---|
-| 영상 생성 | VEO3 (Google Vertex AI / AI Studio) | API 키 필요 |
-| 이미지 생성 | Imagen / Midjourney / SDXL | 캐릭터 시트 레퍼런스용 |
-| 음성/TTS | ElevenLabs, OpenAI TTS | 내레이션 |
-| 영상 합성 | ffmpeg | 클립 이어붙이기, 자막, BGM |
-| 자막 | Whisper (STT) → SRT | 자동 자막 |
+두 가지 경로가 있습니다. 기본은 **무료 경로**입니다.
 
-API 키는 `.env` 에 두고 절대 커밋하지 않습니다.
+### 무료 경로 (키 1개, 이미지 기반 영상)
+| 용도 | 도구 | 스크립트 | 비고 |
+|---|---|---|---|
+| 이미지 생성 | Gemini 2.5 Flash Image (나노바나나) | `scripts/generate_images.py` | 무료 티어 OK. 캐릭터 일관성 강점 |
+| 이미지→영상 | ffmpeg zoompan (켄번스 모션) | `scripts/images_to_clips.py` | 키 불필요 |
+| 음성/TTS | Edge TTS | `scripts/generate_tts.py` | 완전 무료, 키 불필요, 한국어 지원 |
+| 영상 합성 | ffmpeg | `scripts/compose.sh` | 클립 합치기, 자막, BGM |
+
+`GEMINI_API_KEY` 하나만 있으면 됩니다 (이미지 생성은 무료 티어 가능).
+
+### 유료/업그레이드 경로 (진짜 동영상)
+| 용도 | 도구 | 스크립트 | 비고 |
+|---|---|---|---|
+| 영상 생성 | VEO3 (Gemini API / Vertex AI) | `scripts/generate_clips.py` | **유료 티어 필요** |
+| 음성/TTS | ElevenLabs 등 | — | 더 고품질 보이스 원할 때 |
+
+> Veo는 무료 티어에서 동작하지 않습니다. 무료로 시작하려면 위 무료 경로를 쓰고,
+> 나중에 클립 생성 단계만 `generate_clips.py` 로 교체하면 됩니다.
+
+API 키는 `.env` 에 두고 절대 커밋하지 않습니다 (`.gitignore` 에 이미 등록됨).
 
 ## 6. 사용자와의 소통
 

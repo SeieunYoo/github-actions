@@ -4,6 +4,37 @@
 
 ---
 
+## 무료 경로 빠른 시작 (키 1개)
+
+`GEMINI_API_KEY` 하나만 있으면 됩니다 (이미지 생성은 무료 티어).
+
+```bash
+set -a; source .env; set +a            # GEMINI_API_KEY 로드
+EP=output/cafe-diary/01
+
+# 1) 대본(02_script.json) 준비  ← 직접 작성 또는 Claude가 생성
+# 2) 장면별 프롬프트 생성
+python3 prompts/build_prompt.py --series docs/series/example.yaml \
+    --script $EP/02_script.json --out $EP/03_prompts/
+
+# 3) 나노바나나로 캐릭터 일관 이미지 생성 (무료 티어)
+python3 scripts/generate_images.py $EP --series docs/series/example.yaml
+
+# 4) 이미지에 줌/팬 모션 입혀 클립화
+python3 scripts/images_to_clips.py $EP
+
+# 5) 무료 TTS 내레이션 (키 불필요)
+python3 scripts/generate_tts.py $EP --voice ko-KR-SunHiNeural
+
+# 6) 최종 합성
+./scripts/compose.sh $EP            # → $EP/final.mp4
+```
+
+진짜 동영상(인물 자연 모션)을 원하면 3-4단계 대신 유료 Veo를 쓰세요:
+`python3 scripts/generate_clips.py $EP --duration 8` (GEMINI_API_KEY 유료 티어 필요).
+
+---
+
 ## 0. 사전 확인
 
 - [ ] `docs/series/<시리즈명>.md` 시리즈 지침이 존재하는가?
