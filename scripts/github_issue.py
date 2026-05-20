@@ -76,3 +76,18 @@ def create_issue(jobs: list[dict]) -> dict:
         method="POST",
         body={"title": title, "body": body, "labels": [ISSUE_LABEL]},
     )
+
+
+def post_comment(issue_number: int, body: str) -> dict:
+    return _api(
+        f"/issues/{issue_number}/comments",
+        method="POST",
+        body={"body": body},
+    )
+
+
+def remove_label(issue_number: int, label: str) -> None:
+    try:
+        _api(f"/issues/{issue_number}/labels/{label}", method="DELETE")
+    except Exception as e:  # noqa: BLE001
+        log.warning("could not remove label %s: %s", label, e)
