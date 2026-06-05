@@ -1,0 +1,31 @@
+# 채용 공고 필터 설정 — 원하는 값으로 수정해서 사용
+# include 중 하나라도 매칭되고 exclude 중 하나도 매칭 안 되어야 통과
+
+keywords:
+  include:
+    - 프론트엔드
+    - frontend
+    - React
+    - Next.js
+    - TypeScript
+  exclude:
+    - 시니어
+    - Senior
+    - Lead
+    - 팀장
+
+locations:
+  # 빈 리스트면 전체 지역, 값이 있으면 해당 지역만
+  - 서울
+
+experience:
+  # 공고에 명시된 경력 범위와 겹치면 통과 (null이면 무제한)
+  min_years: 0
+  max_years: 3
+
+sources:
+  wanted: true
+  jumpit: true
+
+# 한 번에 알림 받을 최대 공고 수 (이슈가 너무 길어지지 않게)
+max_per_run: 30
