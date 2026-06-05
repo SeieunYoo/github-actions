@@ -12,7 +12,7 @@ import requests
 
 log = logging.getLogger(__name__)
 
-API = "https://www.wanted.co.kr/api/chaos/jobs/v4/search"
+API = "https://www.wanted.co.kr/api/v4/jobs"
 # 518 = 개발 직군 그룹. 다른 직군이 필요하면 keywords.yml 에 옵션으로 빼낸다.
 DEV_GROUP_ID = 518
 HEADERS = {
@@ -32,7 +32,8 @@ HEADERS = {
 
 def fetch(limit: int = 50) -> list[dict]:
     params = {
-        "1_job_group_id": DEV_GROUP_ID,
+        "job_group_id": DEV_GROUP_ID,
+        "country": "kr",
         "locations": "all",
         "years": -1,
         "limit": limit,
