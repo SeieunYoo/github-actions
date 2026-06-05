@@ -14,6 +14,7 @@ import urllib.request
 log = logging.getLogger(__name__)
 
 ISSUE_LABEL = "job-scan"
+ISSUE_LABEL_RAW = "job-scan-raw"
 
 
 def _api(path: str, method: str = "GET", body: dict | None = None) -> dict:
@@ -74,7 +75,7 @@ def create_issue(jobs: list[dict]) -> dict:
     return _api(
         "/issues",
         method="POST",
-        body={"title": title, "body": body, "labels": [ISSUE_LABEL]},
+        body={"title": title, "body": body, "labels": [ISSUE_LABEL, ISSUE_LABEL_RAW]},
     )
 
 
