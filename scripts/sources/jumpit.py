@@ -62,7 +62,7 @@ def _normalize(item: dict) -> dict:
     }
 
 
-def iter_jobs(limit: int = 50) -> Iterable[dict]:
+def iter_jobs(limit: int = 50, options: dict | None = None) -> Iterable[dict]:
     try:
         yield from fetch(limit=limit)
     except Exception as e:  # noqa: BLE001

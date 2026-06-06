@@ -76,12 +76,13 @@ def matches(job: dict, cfg: dict) -> bool:
 
 def collect(cfg: dict) -> list[dict]:
     enabled = (cfg.get("sources") or {})
+    options = (cfg.get("source_options") or {})
     jobs: list[dict] = []
     for name, mod in SOURCE_MAP.items():
         if not enabled.get(name):
             continue
         try:
-            fetched = list(mod.iter_jobs(limit=100))
+            fetched = list(mod.iter_jobs(limit=100, options=options.get(name) or {}))
             log.info("fetched %d jobs from %s", len(fetched), name)
             jobs.extend(fetched)
         except Exception as e:  # noqa: BLE001

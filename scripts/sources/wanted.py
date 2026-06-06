@@ -30,16 +30,23 @@ HEADERS = {
 }
 
 
-def fetch(limit: int = 50) -> list[dict]:
+def fetch(limit: int = 50, options: dict | None = None) -> list[dict]:
+    options = options or {}
     params = {
-        "job_group_id": DEV_GROUP_ID,
-        "country": "kr",
-        "locations": "all",
-        "years": -1,
+        "job_group_id": options.get("job_group_id", DEV_GROUP_ID),
+        "country": options.get("country", "kr"),
+        "locations": options.get("locations", "all"),
+        # years 가 [min, max] 리스트면 requests 가 years=min&years=max 로 직렬화한다.
+        # wdlist URL 의 years=0&years=4 와 동일한 형태. 없으면 -1(전체).
+        "years": options.get("years", -1),
         "limit": limit,
         "offset": 0,
-        "job_sort": "job.latest_order",
+        "job_sort": options.get("job_sort", "job.latest_order"),
     }
+    # wdlist URL 의 selected=873&selected=669 → API 의 tag_type_ids 파라미터
+    tag_type_ids = options.get("tag_type_ids")
+    if tag_type_ids:
+        params["tag_type_ids"] = tag_type_ids
     resp = requests.get(API, params=params, headers=HEADERS, timeout=20)
     resp.raise_for_status()
     payload = resp.json()
@@ -71,9 +78,9 @@ def _normalize(item: dict) -> dict:
     }
 
 
-def iter_jobs(limit: int = 50) -> Iterable[dict]:
+def iter_jobs(limit: int = 50, options: dict | None = None) -> Iterable[dict]:
     try:
-        yield from fetch(limit=limit)
+        yield from fetch(limit=limit, options=options)
     except Exception as e:  # noqa: BLE001
         log.error("wanted fetch failed: %s", e)
         raise

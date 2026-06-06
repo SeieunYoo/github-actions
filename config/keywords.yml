@@ -1,31 +1,34 @@
-# 채용 공고 필터 설정 — 원하는 값으로 수정해서 사용
-# include 중 하나라도 매칭되고 exclude 중 하나도 매칭 안 되어야 통과
+# 채용 공고 필터 설정
+# 원티드 wdlist URL 조건을 그대로 반영:
+#   https://www.wanted.co.kr/wdlist/518?years=0&years=4&locations=all&selected=873&selected=669
+# 직무 태그(873, 669) + 경력 0~4년 + 전 지역으로 원티드 서버에서 필터링한다.
 
 keywords:
-  include:
-    - 프론트엔드
-    - frontend
-    - React
-    - Next.js
-    - TypeScript
-  exclude:
-    - 시니어
-    - Senior
-    - Lead
-    - 팀장
+  # 태그(tag_type_ids)로 이미 직무가 좁혀지므로 추가 텍스트 필터는 쓰지 않는다.
+  include: []
+  exclude: []
 
 locations:
-  # 빈 리스트면 전체 지역, 값이 있으면 해당 지역만
-  - 서울
+  # 빈 리스트면 전체 지역 (URL 의 locations=all 과 동일)
+  []
 
 experience:
-  # 공고에 명시된 경력 범위와 겹치면 통과 (null이면 무제한)
+  # 공고에 명시된 경력 범위와 겹치면 통과 (URL 의 years=0~4)
   min_years: 0
-  max_years: 3
+  max_years: 4
 
 sources:
   wanted: true
-  jumpit: true
+  # 점핏 API 는 현재 GitHub Actions 러너 IP 를 403 으로 차단하므로 끔
+  jumpit: false
+
+# 소스별 쿼리 파라미터 (원티드 wdlist URL 의 파라미터와 1:1 대응)
+source_options:
+  wanted:
+    job_group_id: 518
+    tag_type_ids: [873, 669] # URL 의 selected=873&selected=669
+    years: [0, 4] # URL 의 years=0&years=4
+    locations: all
 
 # 한 번에 알림 받을 최대 공고 수 (이슈가 너무 길어지지 않게)
 max_per_run: 30
